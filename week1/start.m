@@ -39,13 +39,13 @@ end
 mask = mask_img >128; %mask(i,j) == 1 means we have lost information in that pixel
                       %mask(i,j) == 0 means we have information in that
                       %pixel
-                                                                    
+
 %%%Parameters for gradient descent (you do not need for week1)
 param.dt = 5*10^-7;
 param.iterMax = 10^4;
 param.tol = 10^-5;
 
-%%Parameters 
+%%Parameters
 param.hi = 1 / (ni-1);
 param.hj = 1 / (nj-1);
 
@@ -93,7 +93,7 @@ title('After');
 clearvars;
 
 %Read the image
-I = double(imread('image_to_Restore.png'));
+I = double(imread('Image_to_Restore.png'));
 
 [ni, nj, nC] = size(I);
 
@@ -107,8 +107,7 @@ I_ch2 = I(:,:,2);
 I_ch3 = I(:,:,3);
 
 %TO COMPLETE 1
-mask = ???? ; %mask_img(i,j) == 1 means we have lost information in that pixel
-                                      %mask(i,j) == 0 means we have information in that pixel
+mask = (I_ch1 == 1 & I_ch2 == 0 & I_ch3 == 0);
 
 %%%Parameters for gradient descent (you do not need for week1)
 %param.dt = 5*10^-7;
@@ -119,7 +118,7 @@ mask = ???? ; %mask_img(i,j) == 1 means we have lost information in that pixel
 param.hi = 1 / (ni-1);
 param.hj = 1 / (nj-1);
 
-% for each channel 
+% for each channel
 
 figure(1)
 imshow(I);
@@ -128,7 +127,7 @@ title('Before')
 Iinp(:,:,1)=sol_Laplace_Equation_Axb(I_ch1, mask, param);
 Iinp(:,:,2)=sol_Laplace_Equation_Axb(I_ch2, mask, param);
 Iinp(:,:,3)=sol_Laplace_Equation_Axb(I_ch3, mask, param);
-    
+
 figure(2)
 imshow(Iinp)
 title('After');
