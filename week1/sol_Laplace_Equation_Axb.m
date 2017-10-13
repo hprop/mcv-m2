@@ -1,5 +1,5 @@
 function [u] = sol_Laplace_Equation_Axb(f, dom2Inp, param)
-%this code is not intended to be efficient. 
+%this code is not intended to be efficient.
 
 [ni, nj]=size(f);
 
@@ -9,7 +9,7 @@ f_ext(2:end-1, 2:end-1) = f;
 dom2Inp_ext =zeros(ni+2, nj+2);
 dom2Inp_ext (2:end-1, 2:end-1) = dom2Inp;
 
-%Store memory for the A matrix and the b vector    
+%Store memory for the A matrix and the b vector
 nPixels =(ni+2)*(nj+2); %Number of pixels
 
 %We will create A sparse, this is the number of nonzero positions
@@ -29,20 +29,20 @@ i=1;
 for j=1:nj+2
     %from image matrix (i,j) coordinates to vectorial (p) coordinate
     p = (j-1)*(ni+2)+i;
-    
-    
+
+
     %Fill Idx_Ai, idx_Aj and a_ij with the corresponding values and
     %vector b
-    idx_Ai(idx)=p; 
-    idx_Aj(idx) = p; 
+    idx_Ai(idx) = p;
+    idx_Aj(idx) = p;
     a_ij(idx) = 1;
-    idx=idx+1;
-    
+    idx = idx+1;
+
     idx_Ai(idx) = p;
     idx_Aj(idx) = p+1;
-    a_ij(idx) = -1;   
-    idx=idx+1;
-            
+    a_ij(idx) = -1;
+    idx = idx+1;
+
     b(p) = 0;
 end
 
