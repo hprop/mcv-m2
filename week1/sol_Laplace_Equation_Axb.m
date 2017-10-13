@@ -95,64 +95,91 @@ j=nj+2;
 for i=1:ni+2
     %from image matrix (i,j) coordinates to vectorial (p) coordinate
     p = (j-1)*(ni+2)+i;
-    
+
     %Fill Idx_Ai, idx_Aj and a_ij with the corresponding values and
     %vector b
     %TO COMPLETE 4
-    ????
-    ????
-    ????
-    .
-    .
-    .
-    
+    idx_Ai(idx) = p;
+    idx_Aj(idx) = p;
+    a_ij(idx) = 1;
+    idx = idx+1;
+
+    idx_Ai(idx) = p;
+    idx_Aj(idx) = p - (ni + 2);
+    a_ij(idx) = -1;
+    idx = idx+1;
+
+    b(p) = 0;
 end
 
 %Inner points
 for j=2:nj+1
     for i=2:ni+1
-     
+
         %from image matrix (i,j) coordinates to vectorial (p) coordinate
         p = (j-1)*(ni+2)+i;
-                                            
+
         if (dom2Inp_ext(i,j)==1) %If we have to inpaint this pixel
-            
+
             %Fill Idx_Ai, idx_Aj and a_ij with the corresponding values and
             %vector b
             %TO COMPLETE 5
-            ????
-            ????
-            ????
-            .
-            .
-            .
-    
-        else %we do not have to inpaint this pixel 
-            
+
+            % center
+            idx_Ai(idx) = p;
+            idx_Aj(idx) = p;
+            a_ij(idx) = -4;
+            idx = idx+1;
+
+            % north
+            idx_Ai(idx) = p;
+            idx_Aj(idx) = p - 1;
+            a_ij(idx) = 1;
+            idx = idx+1;
+
+            % south
+            idx_Ai(idx) = p;
+            idx_Aj(idx) = p + 1;
+            a_ij(idx) = 1;
+            idx = idx+1;
+
+            % west
+            idx_Ai(idx) = p;
+            idx_Aj(idx) = p - (ni + 2);
+            a_ij(idx) = 1;
+            idx = idx+1;
+
+            % east
+            idx_Ai(idx) = p;
+            idx_Aj(idx) = p + (ni + 2);
+            a_ij(idx) = 1;
+            idx = idx+1;
+
+            b(p) = 0;
+
+        else %we do not have to inpaint this pixel
+
             %Fill Idx_Ai, idx_Aj and a_ij with the corresponding values and
             %vector b
-             %TO COMPLETE 6
-            ????
-            ????
-            ????
-            .
-            .
-            .
-            
-        end       
+            %TO COMPLETE 6
+            idx_Ai(idx) = p;
+            idx_Aj(idx) = p;
+            a_ij(idx) = 1;
+            idx = idx+1;
+            b(p) = f_ext(i,j);
+        end
     end
 end
     %A is a sparse matrix, so for memory requirements we create a sparse
     %matrix
     %TO COMPLETE 7
-    A=sparse(idx_Ai, idx_Aj, a_ij, ???, ???); %??? and ???? is the size of matrix A
-    
+    A=sparse(idx_Ai, idx_Aj, a_ij, nPixels, nPixels);
+
     %Solve the sistem of equations
     x=mldivide(A,b);
-    
+
     %From vector to matrix
     u_ext= reshape(x, ni+2, nj+2);
-    
+
     %Eliminate the ghost boundaries
     u=full(u_ext(2:end-1, 2:end-1));
-    
