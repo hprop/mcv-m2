@@ -77,14 +77,17 @@ for i=1:ni+2
     %Fill Idx_Ai, idx_Aj and a_ij with the corresponding values and
     %vector b
     %TO COMPLETE 3
-    ????
-    ????
-    ????
-    .
-    .
-    .
-    
-    
+    idx_Ai(idx) = p;
+    idx_Aj(idx) = p;
+    a_ij(idx) = 1;
+    idx = idx+1;
+
+    idx_Ai(idx) = p;
+    idx_Aj(idx) = p + ni + 2;
+    a_ij(idx) = -1;
+    idx = idx+1;
+
+    b(p) = 0;
 end
 
 %East side boundary conditions
