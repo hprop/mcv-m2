@@ -51,17 +51,21 @@ i=ni+2;
 for j=1:nj+2
     %from image matrix (i,j) coordinates to vectorial (p) coordinate
     p = (j-1)*(ni+2)+i;
-    
+
     %Fill Idx_Ai, idx_Aj and a_ij with the corresponding values and
     %vector b
     %TO COMPLETE 2
-    ????
-    ????
-    ????
-    .
-    .
-    .
-    
+    idx_Ai(idx) = p;
+    idx_Aj(idx) = p;
+    a_ij(idx) = 1;
+    idx = idx+1;
+
+    idx_Ai(idx) = p;
+    idx_Aj(idx) = p-1;
+    a_ij(idx) = -1;
+    idx = idx+1;
+
+    b(p) = 0;
 end
 
 %West side boundary conditions
