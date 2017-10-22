@@ -156,7 +156,7 @@ for j=2:nj+1
             idx = idx+1;
 
             if (isfield(param, 'driving'))
-                b(p) = param.driving(i,j);
+                b(p) = param.driving(i-1,j-1);
             else
                 b(p) = 0;
             end    
