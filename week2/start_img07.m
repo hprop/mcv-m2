@@ -20,8 +20,8 @@ mask_dst(150:225, 150:225) = 1;
 for nC = 1: nChannels
     
     %TO DO: COMPLETE the ??
-    drivingGrad_i = sol_DiFwd(sol_DiFwd(src(:,:,nC),param.hi));
-    drivingGrad_j = sol_DjFwd(sol_DjFwd(src(:,:,nC),param.hj));
+    drivingGrad_i = sol_DiBwd(sol_DiFwd(src(:,:,nC),param.hi));
+    drivingGrad_j = sol_DjBwd(sol_DjFwd(src(:,:,nC),param.hj));
 
     driving_on_src = drivingGrad_i + drivingGrad_j;
     
