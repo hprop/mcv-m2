@@ -7,31 +7,30 @@ param.hi=1;
 param.hj=1;
 
 % Gauss Seidel image iterations
-param.iterations = 8;
+param.iterations = 16;
 
 %w-relaxation parameter
 % default value 1, w-relaxation has no effect
-w_param = 0.5;
-
+param.w_relax = 0.5;
 
 %masks to exchange: Eyes
 mask_src=logical(imread('mask_src_eyes.png'));
 mask_dst=logical(imread('mask_dst_eyes.png'));
 
 for nC = 1: nChannels
-    
+
     %TO DO: COMPLETE the ??
     drivingGrad_i = sol_DiBwd(sol_DiFwd(src(:,:,nC),param.hi));
     drivingGrad_j = sol_DjBwd(sol_DjFwd(src(:,:,nC),param.hj));
 
     driving_on_src = drivingGrad_i + drivingGrad_j;
-    
-    driving_on_dst = zeros(size(src(:,:,1)));   
+
+    driving_on_dst = zeros(size(src(:,:,1)));
     driving_on_dst(mask_dst(:)) = driving_on_src(mask_src(:));
-    
+
     param.driving = driving_on_dst;
 
-    dst1(:,:,nC) = sol_Poisson_Equation_GaussSeidel(dst(:,:,nC), mask_dst,  param, w_param);
+    dst1(:,:,nC) = sol_Poisson_Equation_GaussSeidel(dst(:,:,nC), mask_dst,  param);
 end
 
 %Mouth
@@ -39,19 +38,19 @@ end
 mask_src=logical(imread('mask_src_mouth.png'));
 mask_dst=logical(imread('mask_dst_mouth.png'));
 for nC = 1: nChannels
-    
+
     %TO DO: COMPLETE the ??
     drivingGrad_i = sol_DiBwd(sol_DiFwd(src(:,:,nC),param.hi));
     drivingGrad_j = sol_DjBwd(sol_DjFwd(src(:,:,nC),param.hj));
 
     driving_on_src = drivingGrad_i + drivingGrad_j;
-    
-    driving_on_dst = zeros(size(src(:,:,1)));  
+
+    driving_on_dst = zeros(size(src(:,:,1)));
     driving_on_dst(mask_dst(:)) = driving_on_src(mask_src(:));
-    
+
     param.driving = driving_on_dst;
 
-    dst1(:,:,nC) = sol_Poisson_Equation_GaussSeidel(dst1(:,:,nC), mask_dst,  param, w_param);
+    dst1(:,:,nC) = sol_Poisson_Equation_GaussSeidel(dst1(:,:,nC), mask_dst,  param);
 end
 
 

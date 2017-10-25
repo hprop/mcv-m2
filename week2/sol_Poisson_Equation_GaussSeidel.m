@@ -1,6 +1,7 @@
-function [result] = sol_Poisson_Equation_GaussSeidel(f, dom, param, w_param)
+function [result] = sol_Poisson_Equation_GaussSeidel(f, dom, param)
 % dom -> logical matrix, if 1 then that pixel belongs to the domain
 % param.iterations -> number of iterations applied by the algorithm
+% param.w_relax -> w-relaxation
 
 [ni, nj]=size(f);
 
@@ -20,8 +21,14 @@ else
     iter = 16;
 end
 
+if (isfield(param, 'w_relax'))
+    w_param = param.w_relax;
+else
+    w_param = 1;
+end
+
 for n=1:iter
-    for i=1:ni  % TODO: boundary in the image border??
+    for i=1:ni
         for j=1:nj
             if dom_ext(i, j) == 1
                 n = f_ext(i-1, j);
