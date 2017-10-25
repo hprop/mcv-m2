@@ -1,6 +1,6 @@
 clearvars;
-src = double(imread('boat.png'));
-dst = double(imread('sea.png')); % flipped girl, because of the eyes
+src = double(imread(['additional_images' filesep 'boat.png']));
+dst = double(imread(['additional_images' filesep 'sea.png'])); % flipped girl, because of the eyes
 [ni,nj, nChannels]=size(dst);
 
 param.hi=1;
