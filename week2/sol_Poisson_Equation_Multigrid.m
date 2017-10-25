@@ -9,7 +9,7 @@ function [result] = sol_Poisson_Equation_Multigrid(f, dom, param)
 if (isfield(param, 'iterations'))
     iter = param.iterations;
 else
-    iter = 5;
+    iter = 4;
 end
 
 result = f;
