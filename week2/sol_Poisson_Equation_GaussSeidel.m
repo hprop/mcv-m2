@@ -1,4 +1,4 @@
-function [result] = sol_Poisson_Equation_GaussSeidel(f, dom, param)
+function [result] = sol_Poisson_Equation_GaussSeidel(f, dom, param, w_param)
 % dom -> logical matrix, if 1 then that pixel belongs to the domain
 % param.iterations -> number of iterations applied by the algorithm
 
@@ -17,7 +17,7 @@ b(2:end-1, 2:end-1) = param.driving;
 if (isfield(param, 'iterations'))
     iter = param.iterations;
 else
-    iter = 200;
+    iter = 16;
 end
 
 for n=1:iter
@@ -28,7 +28,7 @@ for n=1:iter
                 e = f_ext(i, j+1);
                 s = f_ext(i+1, j);
                 w = f_ext(i, j-1);
-                f_ext(i, j) = (-b(i, j) + n + e + s + w) / 4;
+                f_ext(i, j) = w_param * (-b(i, j) + n + e + s + w) / 4 + (1-w_param) * f_ext(i,j);
             end
         end
     end
