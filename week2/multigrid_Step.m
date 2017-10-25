@@ -26,16 +26,11 @@ err_h = sol_Poisson_Equation_Axb(res_h, dom_h, p);
 
 
 %% Reconstruct solution
-err = interp2(err_h);
-err_final = zeros(size(guess));
-err_final(1:end-1, 1:end-1) = err;
-
-result = guess + err_final;
+err = imresize(err_h, size(guess));  % interpolation
+result = guess + err;
 
 
 %% Refine with Gauss-Seidel
 param.iterations = 1;
 param.driving = driving;
-v1 = sol_Poisson_Equation_GaussSeidel(result, dom, param);
-
-result = v1;
+result = sol_Poisson_Equation_GaussSeidel(result, dom, param);
