@@ -7,11 +7,11 @@ param.hi=1;
 param.hj=1;
 
 % Gauss Seidel image iterations
-params.iterations = 2;
+param.iterations = 8;
 
 %w-relaxation parameter
 % default value 1, w-relaxation has no effect
-w_param = 1;
+w_param = 0.5;
 
 
 %masks to exchange: Eyes
