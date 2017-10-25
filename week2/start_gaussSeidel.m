@@ -7,9 +7,10 @@ param.hi=1;
 param.hj=1;
 
 % Gauss Seidel image iterations
-params.iterations = 16;
+params.iterations = 2;
 
 %w-relaxation parameter
+% default value 1, w-relaxation has no effect
 w_param = 1;
 
 
@@ -30,7 +31,7 @@ for nC = 1: nChannels
     
     param.driving = driving_on_dst;
 
-    dst1(:,:,nC) = sol_Poisson_Equation_gaussSeidel(dst(:,:,nC), mask_dst,  param, w_param);
+    dst1(:,:,nC) = sol_Poisson_Equation_GaussSeidel(dst(:,:,nC), mask_dst,  param, w_param);
 end
 
 %Mouth
@@ -50,7 +51,7 @@ for nC = 1: nChannels
     
     param.driving = driving_on_dst;
 
-    dst1(:,:,nC) = sol_Poisson_Equation_gaussSeidel(dst1(:,:,nC), mask_dst,  param, w_param);
+    dst1(:,:,nC) = sol_Poisson_Equation_GaussSeidel(dst1(:,:,nC), mask_dst,  param, w_param);
 end
 
 
