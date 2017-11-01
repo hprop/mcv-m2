@@ -29,43 +29,58 @@ while dif>tol && nIter<iterMax
     nIter=nIter+1;
 
 
-    %Fixed phi, Minimization w.r.t c1 and c2 (constant estimation)
-    c1 = ??; %TODO 1: Line to complete
-    c2 = ??; %TODO 2: Line to complete
+    % Fixed phi, Minimization w.r.t c1 and c2 (constant estimation)
+    % c1: mean grey value for pixels inside the boundary (eq. 10)
+    % c2: mean grey value for pixels outside the boundary (eq. 11)
+    c1 = sum((phi(:) >= 0) .* I(:)) / sum(phi(:) >= 0);
+    c2 = sum((phi(:) < 0) .* I(:)) / sum(phi(:) < 0);
 
-    %Boundary conditions
-    phi(1,:)   = ??; %TODO 3: Line to complete
-    phi(end,:) = ??; %TODO 4: Line to complete
+    % Boundary conditions. Duplicate pixels near the borders
+    % (equation 25 from the paper).
+    phi(1,:)   = phi(2,:);
+    phi(end,:) = phi(end-1,:);
 
-    phi(:,1)   = ??; %TODO 5: Line to complete
-    phi(:,end) = ??; %TODO 6: Line to complete
+    phi(:,1)   = phi(:,2);
+    phi(:,end) = phi(:,end-1);
 
-
-    %Regularized Dirac's Delta computation
+    % Regularized Dirac's Delta computation
     delta_phi = sol_diracReg(phi, epHeaviside);   %notice delta_phi=H'(phi)
 
-    %derivatives estimation
-    %i direction, forward finite differences
-    phi_iFwd  = ??; %TODO 7: Line to complete
-    phi_iBwd  = ??; %TODO 8: Line to complete
+    % Derivatives estimation
+    % i direction, forward finite differences
+    phi_iFwd  = DiFwd(phi);
+    phi_iBwd  = DiBwd(phi);
 
-    %j direction, forward finitie differences
-    phi_jFwd  = ??; %TODO 9: Line to complete
-    phi_jBwd  = ??; %TODO 10: Line to complete
+    % j direction, forward finitie differences
+    phi_jFwd  = DjFwd(phi);
+    phi_jBwd  = DjBwd(phi);
 
-    %centered finite diferences
-    phi_icent   = ??; %TODO 11: Line to complete
-    phi_jcent   = ??; %TODO 12: Line to complete
+    % centered finite diferences
+    phi_icent = (phi_iFwd + phi_iBwd) ./ 2;
+    phi_jcent = (phi_jFwd + phi_jBwd) ./ 2;
 
-    %A and B estimation (A y B from the Pascal Getreuer's IPOL paper "Chan
-    %Vese segmentation
-    A = ??; %TODO 13: Line to complete
-    B = ??; %TODO 14: Line to complete
+    % A and B estimation (A y B from the Pascal Getreuer's IPOL paper "Chan
+    % Vese segmentation. Equation 18.
+    A = mu ./ sqrt(eta.^2 + phi_jFwd.^2 + phi_icent.^2);
+    B = mu ./ sqrt(eta.^2 + phi_jcent.^2 + phi_iFwd.^2);
 
 
     %%Equation 22, for inner points
-    phi(??) = ??; %TODO 15: Line to complete
+    expr1 = A(2:end-1,2:end-1) .* phi(3:end,2:end-1) + ...
+            A(1:end-2,2:end-1) .* phi(1:end-2,2:end-1) + ...
+            B(2:end-1,2:end-1) .* phi(2:end-1,3:end) + ...
+            B(2:end-1,2:end-1) .* phi(2:end-1,1:end-2) + ...
+            -nu - lambda1 .* (I(2:end-1,2:end-1) - c1).^2 + ...
+            lambda2 .* (I(2:end-1,2:end-1) - c2).^2;
 
+    expr2 = 1 + dt .* delta_phi(2:end-1,2:end-1) .* ...
+            (A(2:end-1,2:end-1) + A(1:end-2,2:end-1) + ...
+             B(2:end-1,2:end-1) + B(2:end-1,1:end-2));
+
+    phi(2:end-1,2:end-1) = ...
+        (phi(2:end-1,2:end-1) + dt .* ...
+         delta_phi(2:end-1,2:end-1) ...
+         .* expr1) / expr2;
 
     %Reinitialization of phi
     if reIni>0 && mod(nIter, reIni)==0
@@ -82,15 +97,15 @@ while dif>tol && nIter<iterMax
     %Diference. This stopping criterium has the problem that phi can
     %change, but not the zero level set, that it really is what we are
     %looking for.
-    dif = mean(sum( (phi(:) - phi_old(:)).^2 ))
+    dif = mean(sum( (phi(:) - phi_old(:)).^2 ));
 
     %Plot the level sets surface
     subplot(1,2,1)
         %The level set function
-        surfc(??)  %TODO 16: Line to complete
+        surfc(phi);
         hold on
         %The zero level set over the surface
-        contour(??); %TODO 17: Line to complete
+        contour(phi == 0);
         hold off
         title('Phi Function');
 
@@ -99,7 +114,7 @@ while dif>tol && nIter<iterMax
         imagesc(I);
         colormap gray;
         hold on;
-        contour(??) %TODO 18: Line to complete
+        contour(phi == 0);
         title('Image and zero level set of Phi')
 
         axis off;
