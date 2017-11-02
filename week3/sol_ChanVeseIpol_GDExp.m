@@ -61,8 +61,8 @@ while dif>tol && nIter<iterMax
 
     % A and B estimation (A y B from the Pascal Getreuer's IPOL paper "Chan
     % Vese segmentation. Equation 18.
-    A = mu ./ sqrt(eta.^2 + phi_jFwd.^2 + phi_icent.^2);
-    B = mu ./ sqrt(eta.^2 + phi_jcent.^2 + phi_iFwd.^2);
+    A = mu ./ sqrt(eta^2 + phi_jFwd.^2 + phi_icent.^2);
+    B = mu ./ sqrt(eta^2 + phi_jcent.^2 + phi_iFwd.^2);
 
 
     %%Equation 22, for inner points
@@ -78,9 +78,7 @@ while dif>tol && nIter<iterMax
              B(2:end-1,2:end-1) + B(2:end-1,1:end-2));
 
     phi(2:end-1,2:end-1) = ...
-        (phi(2:end-1,2:end-1) + dt .* ...
-         delta_phi(2:end-1,2:end-1) ...
-         .* expr1) / expr2;
+        (phi(2:end-1,2:end-1) + dt * delta_phi(2:end-1,2:end-1) .* expr1) ./ expr2;
 
     %Reinitialization of phi
     if reIni>0 && mod(nIter, reIni)==0
