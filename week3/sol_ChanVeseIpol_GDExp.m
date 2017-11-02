@@ -103,7 +103,7 @@ while dif>tol && nIter<iterMax
         surfc(phi);
         hold on
         %The zero level set over the surface
-        contour(phi == 0);
+        contour(phi >= 0);
         hold off
         title('Phi Function');
 
@@ -112,7 +112,7 @@ while dif>tol && nIter<iterMax
         imagesc(I);
         colormap gray;
         hold on;
-        contour(phi == 0);
+        contour(phi >= 0);
         title('Image and zero level set of Phi')
 
         axis off;
