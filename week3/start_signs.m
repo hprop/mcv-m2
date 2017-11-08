@@ -4,7 +4,7 @@ clc
 
 %I=double(imread('zigzag_mask.png'));
 %I=mean(I,3); %To 2D matrix
-I=double(imread('circles.png'));
+I=double(imread('additional_images/signs.jpeg'));
 %I=double(imread('noisedCircles.tif'));
 %I=double(imread('phantom17.bmp'));
 %I=double(imread('phantom18.bmp'));
@@ -25,15 +25,15 @@ I=I/max(I(:));
 %ok mu=0.1 nu=0.01
 %signs mu=0.2 nu=0.1 lambda=10
 %cells mu=0.1 nu=-0.1
-%snowboard mu=0.2 nu=0.1
+%snowboard mu=0.2 nu=0
 
-mu=1;
-nu=0;
+mu=0.2;
+nu=0.1;
 
 
 %%Parameters
-lambda1=1;
-lambda2=1;
+lambda1=10;
+lambda2=10;
 %lambda1=10^-3; %Hola carola problem
 %lambda2=10^-3; %Hola carola problem
 
