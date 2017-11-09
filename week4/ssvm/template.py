@@ -210,7 +210,20 @@ if plot_coefficients:
 
     """ SHOW IMAGE OF THE LEARNED UNARY COEFFICIENTS, size (num_labels, num_features)"""
     """ use matshow() and colorbar()"""
-
-
+    unary_coef = crf.w[:num_labels * num_features].reshape(num_labels, num_features)
+    plt.matshow(unary_coef)
+    plt.colorbar()
+    plt.xticks(range(num_features),
+               ['x0', 'y0', 'x1', 'y1', 'xC', 'yC', 'angle'])
+    plt.yticks(range(len(name_of_labels)), name_of_labels)
+    plt.title("Unary coefficients")
+    plt.show()
 
     """ SHOW IMAGE OF PAIRWISE COEFFICIENTS size (num_labels, num_labels)"""
+    pairwise_coef = crf.w[num_labels * num_features:].reshape(num_labels, num_labels)
+    plt.matshow(pairwise_coef)
+    plt.colorbar()
+    plt.xticks(range(len(name_of_labels)), name_of_labels, rotation='vertical')
+    plt.yticks(range(len(name_of_labels)), name_of_labels)
+    plt.title("Pairwise coefficients")
+    plt.show()
