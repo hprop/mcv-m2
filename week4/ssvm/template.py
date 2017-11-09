@@ -94,7 +94,7 @@ DEFINE HERE YOUR GRAPHICAL MODEL AND CHOOSE ONE LEARNING METHOD
 (OneSlackSSVM, NSlackSSVM, FrankWolfeSSVM)
 """
 model = ChainCRF()
-crf = FrankWolfeSSVM(model=model, C=.1)  # , max_iter=11)
+crf = FrankWolfeSSVM(model=model, C=2)  # , max_iter=11)
 
 """
 Compare SVM with S-SVM doing k-fold cross validation, k=5, see scikit-learn.org
