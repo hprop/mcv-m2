@@ -6,14 +6,15 @@ im_name='3_12_s.bmp';
 
 % TODO: Update library path
 % Add  library paths
-basedir='~/Desenvolupament/UGM/';
-addpath(basedir);
+basedir='UGM';
+addpath(genpath(basedir));
+%addpath(basedir);
 
 
 
 %Set model parameters
 %cluster color
-K=4; % Number of color clusters (=number of states of hidden variables)
+K = 4;  % Number of color clusters (=number of states of hidden variables)
 
 %Pair-wise parameters
 smooth_term=[0.0 2]; % Potts Model
@@ -35,10 +36,20 @@ NumCols = size(im,2);
 %Preparing data for GMM fiting
 %
 % TODO: define the unary energy term: data_term
-% nodePot = P( color at pixel 'x' | Cluster color 'c' )  
+% nodePot = P( color at pixel 'x' | Cluster color 'c' )
+K = 2;  % total of clusters
+
+im = double(im);
+size(im)
+x = reshape(im, [size(im,1) * size(im,2), size(im,3)]);
+gmm_color = gmdistribution.fit(x,K);
+mu_color = gmm_color.mu;
+%gmm_color.posterior([30, 10, 234])
 
 
-nodePot=[];
+nodePot = zeros(NumFils * NumCols, K);
+%nodePot(:, 1) = ??;
+%nodePot(:, 2) = ??;
 
 
 
