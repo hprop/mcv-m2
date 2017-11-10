@@ -81,7 +81,10 @@ if add_gaussian_noise_to_features:
 
 # Define the graphical model
 model = ChainCRF()
-crf = FrankWolfeSSVM(model=model, C=2)  # , max_iter=11)
+crf = FrankWolfeSSVM(model=model, C=20)  # C=2->96.20%, C=5->98.37,
+                                         # C=9->99.35%, C=12->99.46,
+                                         # C=15->99.46%, C=20->99.67%
+                                         # max_iter=11)
 
 
 # Compare SVM with S-SVM doing k-fold cross validation, see scikit-learn.org.
@@ -141,7 +144,9 @@ for train_index, test_index in kf:
     Y_test = Y_test.flatten()
 
     # Create and train
-    svm = LinearSVC(dual=False, C=.1)
+    svm = LinearSVC(dual=False, C=25)  # C=1.9->91.08%, C=3->92.93%, C=5->95.11,
+                                      # C=7->95.33, C=10->96.20%, C=20->96.41%
+                                      # C=25->96.74%
     svm.fit(X_train, Y_train)
 
     # Use test dataset to meassure the svm's accuracy
