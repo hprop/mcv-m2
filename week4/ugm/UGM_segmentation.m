@@ -14,10 +14,9 @@ addpath(genpath(basedir));
 
 %Set model parameters
 %cluster color
-K = 4;  % Number of color clusters (=number of states of hidden variables)
 
 %Pair-wise parameters
-smooth_term=[0.0 2]; % Potts Model
+smooth_term=2; % Potts Model
 
 %Load images
 im = imread(im_name);
@@ -29,7 +28,7 @@ NumCols = size(im,2);
 %Convert to LAB colors space
 % TODO: Uncomment if you want to work in the LAB space
 %
-% im = RGB2Lab(im);
+im = RGB2Lab(im);
 
 
 
@@ -40,12 +39,13 @@ NumCols = size(im,2);
 K = 2;  % total of clusters
 
 im = double(im);
-im = im(:,:,1);
-x = reshape(im, [size(im,1) * size(im,2),1]);
+x = reshape(im, [size(im,1) * size(im,2),size(im,3)]);
 gmm_color = gmdistribution.fit(x,K);
 mu_color = gmm_color.mu;
 
 [nodePot, data_term]=gmm_color.posterior(x);
+
+data_term = -nodePot;
 
 %Building 4-grid
 %Build UGM Model for 4-connected segmentation
@@ -62,8 +62,9 @@ if ~isempty(edgePot)
     
     % Call different UGM inference algorithms
     display('Loopy Belief Propagation'); tic;
-    [nodeBelLBP,edgeBelLBP,logZLBP] = UGM_Infer_LBP(nodePot,edgePot,edgeStruct);toc;
-    im_lbp = max(nodeBelLBP,[],2);
+    [nodeBelLBP,edgeBelLBP,logZLBP] = UGM_Infer_LBP(nodePot,edgePot,edgeStruct);toc; 
+    [~, im_lbp] = max(nodeBelLBP,[],2); 
+    im_lbp = reshape(mu_color(im_lbp, :), size(im));
     
     % Max-sum
     display('Max-sum'); tic;
