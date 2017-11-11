@@ -40,18 +40,12 @@ NumCols = size(im,2);
 K = 2;  % total of clusters
 
 im = double(im);
-size(im)
-x = reshape(im, [size(im,1) * size(im,2), size(im,3)]);
+im = im(:,:,1);
+x = reshape(im, [size(im,1) * size(im,2),1]);
 gmm_color = gmdistribution.fit(x,K);
 mu_color = gmm_color.mu;
-%gmm_color.posterior([30, 10, 234])
 
-
-nodePot = zeros(NumFils * NumCols, K);
-%nodePot(:, 1) = ??;
-%nodePot(:, 2) = ??;
-
-
+[nodePot, data_term]=gmm_color.posterior(x);
 
 %Building 4-grid
 %Build UGM Model for 4-connected segmentation
@@ -59,7 +53,6 @@ disp('create UGM model');
 
 % Create UGM data
 [edgePot,edgeStruct] = CreateGridUGMModel(NumFils, NumCols, K ,smooth_term);
-
 
 if ~isempty(edgePot)
 
