@@ -83,7 +83,6 @@ if ~isempty(edgePot)
     subplot(2,3,2),imshow(Lab2RGB(im_c),[]);xlabel('Clustering without GM');
     subplot(2,3,3),imshow(Lab2RGB(im_bp),[]);xlabel('Max-Sum');
     subplot(2,3,4),imshow(Lab2RGB(im_lbp),[]);xlabel('Loopy Belief Propagation');
-    subplot(2,3,5),imshow(Lab2RGB(im_gc),[]);xlabel('Graph Cut');
     
 else
    
