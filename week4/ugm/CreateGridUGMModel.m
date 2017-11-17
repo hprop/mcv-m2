@@ -41,8 +41,7 @@ edgePot = zeros(K,K,nEdges);
 for e = 1:edgeStruct.nEdges
    n1 = edgeStruct.edgeEnds(e,1);
    n2 = edgeStruct.edgeEnds(e,2);
-   pot_same = lambda;
-   edgePot(:,:,e) = ones(K) + sparse([1:K],[1:K], (pot_same-1).*ones(K,1));
+   edgePot(:,:,e) = ones(K) + diag(lambda) - diag(ones(K,1));
 end
 
 toc;

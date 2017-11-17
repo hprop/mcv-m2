@@ -16,7 +16,7 @@ addpath(genpath(basedir));
 %cluster color
 
 %Pair-wise parameters
-smooth_term=2; % Potts Model
+smooth_term=[4 4]; % Potts Model
 
 %Load images
 im = imread(im_name);
@@ -79,10 +79,11 @@ if ~isempty(edgePot)
     % - Linear Programing Relaxation
     
     figure
-    subplot(2,2,1),imshow(Lab2RGB(im));xlabel('Original');
-    subplot(2,2,2),imshow(Lab2RGB(im_c),[]);xlabel('Clustering without GM');
-    subplot(2,2,3),imshow(Lab2RGB(im_bp),[]);xlabel('Max-Sum');
-    subplot(2,2,4),imshow(Lab2RGB(im_lbp),[]);xlabel('Loopy Belief Propagation');
+    subplot(2,3,1),imshow(Lab2RGB(im));xlabel('Original');
+    subplot(2,3,2),imshow(Lab2RGB(im_c),[]);xlabel('Clustering without GM');
+    subplot(2,3,3),imshow(Lab2RGB(im_bp),[]);xlabel('Max-Sum');
+    subplot(2,3,4),imshow(Lab2RGB(im_lbp),[]);xlabel('Loopy Belief Propagation');
+    subplot(2,3,5),imshow(Lab2RGB(im_gc),[]);xlabel('Graph Cut');
     
 else
    
