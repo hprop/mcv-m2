@@ -8,25 +8,23 @@ Created on Fri Sep  4 20:15:45 2015
 
 """
 import os
+import shutil
+
 import matplotlib.pyplot as plt
 import numpy as np
-
 from pandas import ExcelFile
-
 from pystruct.models import ChainCRF
 from pystruct.learners import FrankWolfeSSVM  # OneSlackSSVM, NSlackSSVM
 from sklearn.cross_validation import KFold
 from sklearn.svm import LinearSVC
 
-from plot_segments import plot_segments
+import utils
 
 
-num_segments_per_jacket = 40
-add_gaussian_noise_to_features = False
-sigma_noise = 0.1
-plot_labeling = False
+experiment = 6  #
+save_figures = True  # Save ground truth and test figures
 plot_coefficients = False
-
+num_segments_per_jacket = 40
 
 # Load the segments and the groundtruth for all jackets
 path_measures = 'man_jacket_hand_measures.xls'
@@ -46,9 +44,16 @@ for row in it:
 labels_segments = np.array(labels_segments).astype(int)
 
 
-# Show groundtruth for 3rd jacket
-n = 2
-plot_segments(segments[n], sheet.ide[n], labels_segments[n])
+# Save ground truth figures in hard disk (directory 'gt_figures/')
+if save_figures:
+    gt_fig_dir = os.path.join(os.path.dirname(__file__), 'figures', 'gt')
+    if not os.path.exists(gt_fig_dir):
+        print('Creating directory {}...'.format(gt_fig_dir))
+        os.makedirs(gt_fig_dir)
+        for i in range(len(segments)):
+            dst = os.path.join(gt_fig_dir, sheet.ide[i] + '.png')
+            utils.save_segments(dst, segments[i], sheet.ide[i],
+                                labels_segments[i])
 
 
 # Make matrices X of shape (number of jackets, number of features)
@@ -60,24 +65,25 @@ Y = labels_segments
 num_jackets = labels_segments.shape[0]
 num_labels = np.unique(np.ravel(labels_segments)).size
 
+
 # CHANGE THIS IF YOU CHANGE NUMBER OF FEATURES
-num_features = 7
-X = np.zeros((num_jackets, num_segments_per_jacket, num_features))
+X = utils.create_feature_tensor(segments, labels_segments)
 
-for jacket_segments, i in zip(segments, range(num_jackets)):
-    for s, j in zip(jacket_segments, range(num_segments_per_jacket)):
-        """ set the features """
-        X[i, j, 0:num_features] = \
-            s.x0norm, s.y0norm, s.x1norm, s.y1norm, \
-            (s.x0norm + s.x1norm) / 2., (s.y0norm + s.y1norm) / 2., \
-            s.angle / (2*np.pi)
+if experiment == 2:
+    X = X[:, :, (0, 1, 2, 3, 6)]  # x0, y0, x1, y1, angle
+elif experiment == 3:
+    X = X[:, :, (0, 1, 2, 3)]  # x0, y0, x1, y1
+elif experiment == 4:
+    X = X[:, :, (0, 1, 6)]  # x0, y0, angle
+elif experiment == 5:
+    X = X[:, :, 6]  # angle
+    X = X[:, :, np.newaxis]  # keep same X.ndim than other cases
 
-print('X, Y done')
+elif experiment == 6:
+    X = utils.add_gaussian_noise(X, mu=0, sigma=0.3)
 
-# You can add some noise to the features
-if add_gaussian_noise_to_features:
-    print('Noise sigma {}'.format(sigma_noise))
-    X = X + np.random.normal(0.0, sigma_noise, size=X.size).reshape(X.shape)
+num_features = X.shape[2]
+
 
 # Define the graphical model
 model = ChainCRF()
@@ -95,6 +101,24 @@ scores_crf = np.zeros(n_folds)
 scores_svm = np.zeros(n_folds)
 wrong_segments_crf = []
 wrong_segments_svm = []
+
+# Prepare directories for test figures
+if save_figures:
+    for i in range(n_folds):
+        base_dir = os.path.join(os.path.dirname(__file__), 'figures')
+        crf_dir = os.path.join(base_dir, 'k{}_crf'.format(i))
+        svm_dir = os.path.join(base_dir, 'k{}_svm'.format(i))
+
+        # remove previous results, if they exists
+        if os.path.exists(crf_dir):
+            shutil.rmtree(crf_dir)
+
+        if os.path.exists(svm_dir):
+            shutil.rmtree(svm_dir)
+
+        os.makedirs(crf_dir)
+        os.makedirs(svm_dir)
+
 
 kf = KFold(num_jackets, n_folds=n_folds)
 fold = 0
@@ -124,16 +148,13 @@ for train_index, test_index in kf:
 
     print('CRF - total wrong segments: {}, score: {}'.format(fails, score))
 
-    # Figure showing the result of classification of segments for each jacket
-    # in the testing part of present fold
-    if plot_labeling:
-        for ti, pred in zip(test_index, Y_pred):
-            print(ti)
-            print(pred)
-            s = segments[ti]
-            plot_segments(s,
-                          caption='SSVM predictions for jacket ' + str(ti+1),
-                          labels_segments=pred)
+    if save_figures:
+        base_dir = os.path.join(os.path.dirname(__file__), 'figures')
+        crf_dir = os.path.join(base_dir, 'k{}_crf'.format(fold))
+        for i, pred in zip(test_index, Y_pred):
+            dst = os.path.join(crf_dir, sheet.ide[i] + '.png')
+            utils.save_segments(dst, segments[i], sheet.ide[i],
+                                labels_segments[i])
 
     # LINEAR SVM TRAINING AND TESTING
 
@@ -158,6 +179,14 @@ for train_index, test_index in kf:
     scores_svm[fold] = score
 
     print('SVM - total wrong segments: {}, score: {}'.format(fails, score))
+
+    if save_figures:
+        base_dir = os.path.join(os.path.dirname(__file__), 'figures')
+        crf_dir = os.path.join(base_dir, 'k{}_svm'.format(fold))
+        for i, pred in zip(test_index, Y_pred):
+            dst = os.path.join(crf_dir, sheet.ide[i] + '.png')
+            utils.save_segments(dst, segments[i], sheet.ide[i],
+                                labels_segments[i])
 
     fold += 1
 
