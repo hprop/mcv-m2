@@ -8,7 +8,9 @@ im_name='3_12_s.bmp';
 % Add  library paths
 
 basedir='UGM';
+maxflow='maxflow';
 addpath(genpath(basedir));
+addpath(genpath(maxflow));
 
 %Set model parameters
 %cluster color
@@ -69,17 +71,38 @@ if ~isempty(edgePot)
     decodeLBP = UGM_Decode_LBP(nodePot,edgePot,edgeStruct);
     im_bp= reshape(mu_color(decodeLBP,:),size(im));
     toc;
-        
+    
+    %Graph Cuts
+    display('Graph Cuts'); tic;
+    decodeGC = UGM_Decode_GraphCut(nodePot,edgePot,edgeStruct);
+    im_gc= reshape(mu_color(decodeGC,:),size(im));
+    toc;
+    
+    %Linear Programming
+    %display('Linear Programming'); tic;
+    %decodeLP = UGM_Decode_LinProg(nodePot,edgePot,edgeStruct);
+    %im_lp= reshape(mu_color(decodeLP,:),size(im));
+    %toc;
+    
+    %Iterated Conditional Modes with restarts
+    display('Linear Programming'); tic;
+    nRestarts = 500;
+    decodeICM = UGM_Decode_ICMrestart(nodePot,edgePot,edgeStruct,nRestarts);
+    im_icm= reshape(mu_color(decodeICM,:),size(im));
+    toc;
+    
     % TODO: apply other inference algorithms and compare their performance
     %
     % - Graph Cut
     % - Linear Programing Relaxation
     
     figure
-    subplot(2,2,1),imshow(Lab2RGB(im));xlabel('Original');
-    subplot(2,2,2),imshow(Lab2RGB(im_c),[]);xlabel('Clustering without GM');
-    subplot(2,2,3),imshow(Lab2RGB(im_bp),[]);xlabel('Max-Sum');
-    subplot(2,2,4),imshow(Lab2RGB(im_lbp),[]);xlabel('Loopy Belief Propagation');
+    subplot(2,3,1),imshow(Lab2RGB(im));xlabel('Original');
+    subplot(2,3,2),imshow(Lab2RGB(im_c),[]);xlabel('Clustering without GM');
+    subplot(2,3,3),imshow(Lab2RGB(im_bp),[]);xlabel('Max-Sum');
+    subplot(2,3,4),imshow(Lab2RGB(im_lbp),[]);xlabel('Loopy Belief Propagation');
+    subplot(2,3,5),imshow(Lab2RGB(im_gc),[]);xlabel('Graph Cuts');
+    subplot(2,3,6),imshow(Lab2RGB(im_icm),[]);xlabel('Iterated Conditional Modes');
 
 else
    
