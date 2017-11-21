@@ -2,21 +2,22 @@ clear all;
 close all;
 clc;
 
-im_name='3_12_s.bmp';
+im_name='2_1_s.bmp';
 
 % TODO: Update library path
 % Add  library paths
-
 basedir='UGM';
 maxflow='maxflow';
 addpath(genpath(basedir));
 addpath(genpath(maxflow));
 
+
+
 %Set model parameters
 %cluster color
 
 %Pair-wise parameters
-smooth_term=[4 4]; % Potts Model
+smooth_term=[3000 3000]; % Potts Model
 
 %Load images
 im = imread(im_name);
@@ -78,32 +79,18 @@ if ~isempty(edgePot)
     im_gc= reshape(mu_color(decodeGC,:),size(im));
     toc;
     
-    %Linear Programming
-    %display('Linear Programming'); tic;
-    %decodeLP = UGM_Decode_LinProg(nodePot,edgePot,edgeStruct);
-    %im_lp= reshape(mu_color(decodeLP,:),size(im));
-    %toc;
-    
-    %Iterated Conditional Modes with restarts
-    display('Linear Programming'); tic;
-    nRestarts = 500;
-    decodeICM = UGM_Decode_ICMrestart(nodePot,edgePot,edgeStruct,nRestarts);
-    im_icm= reshape(mu_color(decodeICM,:),size(im));
-    toc;
-    
     % TODO: apply other inference algorithms and compare their performance
     %
     % - Graph Cut
     % - Linear Programing Relaxation
     
     figure
-    subplot(2,3,1),imshow(Lab2RGB(im));xlabel('Original');
-    subplot(2,3,2),imshow(Lab2RGB(im_c),[]);xlabel('Clustering without GM');
-    subplot(2,3,3),imshow(Lab2RGB(im_bp),[]);xlabel('Max-Sum');
-    subplot(2,3,4),imshow(Lab2RGB(im_lbp),[]);xlabel('Loopy Belief Propagation');
+    subplot(2,2,1),imshow(Lab2RGB(im));xlabel('Original');
+    subplot(2,2,2),imshow(Lab2RGB(im_c),[]);xlabel('Clustering without GM');
+    subplot(2,2,3),imshow(Lab2RGB(im_bp),[]);xlabel('Max-Sum');
+    subplot(2,2,4),imshow(Lab2RGB(im_lbp),[]);xlabel('Loopy Belief Propagation');
     subplot(2,3,5),imshow(Lab2RGB(im_gc),[]);xlabel('Graph Cuts');
-    subplot(2,3,6),imshow(Lab2RGB(im_icm),[]);xlabel('Iterated Conditional Modes');
-
+    
 else
    
     error('You have to implement the CreateGridUGMModel.m function');
