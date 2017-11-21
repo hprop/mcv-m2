@@ -58,7 +58,7 @@ end
 
 % Create UGM data
 
-[edgePot,edgeStruct] = CreateGridUGMModel_Ising(NumFils, NumCols, K ,smooth_term, Xstd);
+[edgePot,edgeStruct] = CreateGridUGMModel_Boltzmanndistr(NumFils, NumCols, K ,smooth_term, Xstd);
 
 if ~isempty(edgePot)
 
