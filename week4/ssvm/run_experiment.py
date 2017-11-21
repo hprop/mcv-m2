@@ -21,9 +21,9 @@ from sklearn.svm import LinearSVC
 import utils
 
 
-experiment = 6  #
+experiment = 4  # Emperiment to execute. Values: 1 to 7.
 save_figures = True  # Save ground truth and test figures
-plot_coefficients = False
+plot_coefficients = True  # Plot figures for CRF's coefficients
 num_segments_per_jacket = 40
 
 # Load the segments and the groundtruth for all jackets
@@ -51,7 +51,7 @@ if save_figures:
         print('Creating directory {}...'.format(gt_fig_dir))
         os.makedirs(gt_fig_dir)
         for i in range(len(segments)):
-            dst = os.path.join(gt_fig_dir, sheet.ide[i] + '.png')
+            dst = os.path.join(gt_fig_dir, sheet.ide[i] + '.png')  #
             utils.save_segments(dst, segments[i], sheet.ide[i],
                                 labels_segments[i])
 
@@ -66,32 +66,31 @@ num_jackets = labels_segments.shape[0]
 num_labels = np.unique(np.ravel(labels_segments)).size
 
 
-# CHANGE THIS IF YOU CHANGE NUMBER OF FEATURES
+# Experiments definition
 X = utils.create_feature_tensor(segments, labels_segments)
 
+if experiment == 1:
+    pass              # x0, y0, x1, y1, xM, yM, angle (Experiment 1)
 if experiment == 2:
-    X = X[:, :, (0, 1, 2, 3, 6)]  # x0, y0, x1, y1, angle
+    X = X[:, :, (0, 1, 2, 3, 6)]  # x0, y0, x1, y1, angle (Experiment 2.A)
 elif experiment == 3:
-    X = X[:, :, (0, 1, 2, 3)]  # x0, y0, x1, y1
+    X = X[:, :, (0, 1, 2, 3)]  # x0, y0, x1, y1 (Experiment 2.B)
 elif experiment == 4:
-    X = X[:, :, (0, 1, 6)]  # x0, y0, angle
-elif experiment == 5:
-    X = X[:, :, 6]  # angle
+    X = X[:, :, 6]  # angle (Experiment 2.C)
     X = X[:, :, np.newaxis]  # keep same X.ndim than other cases
-
+elif experiment == 5:
+    X = utils.add_gaussian_noise(X, mu=0, sigma=0.02)
 elif experiment == 6:
-    X = utils.add_gaussian_noise(X, mu=0, sigma=0.3)
+    X = utils.add_gaussian_noise(X, mu=0, sigma=0.05)
+elif experiment == 7:
+    X = utils.add_gaussian_noise(X, mu=0, sigma=0.1)
 
 num_features = X.shape[2]
 
 
 # Define the graphical model
 model = ChainCRF()
-crf = FrankWolfeSSVM(model=model, C=20)  # C=2->96.20%, C=5->98.37,
-                                         # C=9->99.35%, C=12->99.46,
-                                         # C=15->99.46%, C=20->99.67%
-                                         # max_iter=11)
-
+crf = FrankWolfeSSVM(model=model, C=40)
 
 # Compare SVM with S-SVM doing k-fold cross validation, see scikit-learn.org.
 # With k=5, in each fold we have 4 jackets for testing, 19 for training,
@@ -153,8 +152,7 @@ for train_index, test_index in kf:
         crf_dir = os.path.join(base_dir, 'k{}_crf'.format(fold))
         for i, pred in zip(test_index, Y_pred):
             dst = os.path.join(crf_dir, sheet.ide[i] + '.png')
-            utils.save_segments(dst, segments[i], sheet.ide[i],
-                                labels_segments[i])
+            utils.save_segments(dst, segments[i], sheet.ide[i], pred)
 
     # LINEAR SVM TRAINING AND TESTING
 
@@ -165,9 +163,7 @@ for train_index, test_index in kf:
     Y_test = Y_test.flatten()
 
     # Create and train
-    svm = LinearSVC(dual=False, C=25)  # C=1.9->91.08%, C=3->92.93%, C=5->95.11,
-                                      # C=7->95.33, C=10->96.20%, C=20->96.41%
-                                      # C=25->96.74%
+    svm = LinearSVC(dual=False, C=20)
     svm.fit(X_train, Y_train)
 
     # Use test dataset to meassure the svm's accuracy
@@ -183,10 +179,9 @@ for train_index, test_index in kf:
     if save_figures:
         base_dir = os.path.join(os.path.dirname(__file__), 'figures')
         crf_dir = os.path.join(base_dir, 'k{}_svm'.format(fold))
-        for i, pred in zip(test_index, Y_pred):
+        for i, pred in zip(test_index, np.split(Y_pred, len(test_index))):
             dst = os.path.join(crf_dir, sheet.ide[i] + '.png')
-            utils.save_segments(dst, segments[i], sheet.ide[i],
-                                labels_segments[i])
+            utils.save_segments(dst, segments[i], sheet.ide[i], pred)
 
     fold += 1
 

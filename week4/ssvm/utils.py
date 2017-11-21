@@ -95,7 +95,7 @@ def save_segments(dst_path, segments, caption='', labels_segments=None):
 
     """
     colors = 'rgbcmyk'*2
-    fig = plt.figure()
+    plt.figure()
     num_segments = len(segments)
     for s, n in zip(segments, range(num_segments)):
         if labels_segments is None:
@@ -110,5 +110,6 @@ def save_segments(dst_path, segments, caption='', labels_segments=None):
     plt.gca().invert_yaxis()
     plt.title(caption)
     plt.savefig(dst_path)
-
-    return fig
+    plt.clf()
+    plt.cla()
+    plt.close()
