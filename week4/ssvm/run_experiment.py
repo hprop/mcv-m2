@@ -21,9 +21,9 @@ from sklearn.svm import LinearSVC
 import utils
 
 
-experiment = 4  # Emperiment to execute. Values: 1 to 7.
-save_figures = True  # Save ground truth and test figures
-plot_coefficients = True  # Plot figures for CRF's coefficients
+experiment = 1  # Emperiment to execute. Values: 1 to 7.
+save_figures = False  # Save ground truth and test figures
+plot_coefficients = False  # Plot figures for CRF's coefficients
 num_segments_per_jacket = 40
 
 # Load the segments and the groundtruth for all jackets
@@ -51,7 +51,7 @@ if save_figures:
         print('Creating directory {}...'.format(gt_fig_dir))
         os.makedirs(gt_fig_dir)
         for i in range(len(segments)):
-            dst = os.path.join(gt_fig_dir, sheet.ide[i] + '.png')  #
+            dst = os.path.join(gt_fig_dir, sheet.ide[i] + '.png')
             utils.save_segments(dst, segments[i], sheet.ide[i],
                                 labels_segments[i])
 
@@ -79,18 +79,18 @@ elif experiment == 4:
     X = X[:, :, 6]  # angle (Experiment 2.C)
     X = X[:, :, np.newaxis]  # keep same X.ndim than other cases
 elif experiment == 5:
-    X = utils.add_gaussian_noise(X, mu=0, sigma=0.02)
+    X = utils.add_gaussian_noise(X, mu=0, sigma=0.02)  # (Experiment 3.A)
 elif experiment == 6:
-    X = utils.add_gaussian_noise(X, mu=0, sigma=0.05)
+    X = utils.add_gaussian_noise(X, mu=0, sigma=0.05)  # (Experiment 3.B)
 elif experiment == 7:
-    X = utils.add_gaussian_noise(X, mu=0, sigma=0.1)
+    X = utils.add_gaussian_noise(X, mu=0, sigma=0.1)   # (Experiment 3.C)
 
 num_features = X.shape[2]
 
 
 # Define the graphical model
 model = ChainCRF()
-crf = FrankWolfeSSVM(model=model, C=40)
+crf = FrankWolfeSSVM(model=model, C=30)
 
 # Compare SVM with S-SVM doing k-fold cross validation, see scikit-learn.org.
 # With k=5, in each fold we have 4 jackets for testing, 19 for training,
@@ -163,7 +163,7 @@ for train_index, test_index in kf:
     Y_test = Y_test.flatten()
 
     # Create and train
-    svm = LinearSVC(dual=False, C=20)
+    svm = LinearSVC(dual=False, C=35)
     svm.fit(X_train, Y_train)
 
     # Use test dataset to meassure the svm's accuracy
