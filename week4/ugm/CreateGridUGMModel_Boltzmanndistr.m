@@ -42,7 +42,7 @@ for e = 1:edgeStruct.nEdges
    n1 = edgeStruct.edgeEnds(e,1);
    n2 = edgeStruct.edgeEnds(e,2);
    diag_vector = exp(lambda(1) + lambda(2)*1/(1+abs(X(n1)-X(n2))))*ones(K,1);
-   edgePot(:,:,e) = ones(K) + diag_vector - diag(ones(K,1));
+   edgePot(:,:,e) = ones(K) + diag(diag_vector) - diag(ones(K,1));
 end
 
 toc;
