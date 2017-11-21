@@ -90,7 +90,7 @@ num_features = X.shape[2]
 
 # Define the graphical model
 model = ChainCRF()
-crf = FrankWolfeSSVM(model=model, C=30)
+crf = FrankWolfeSSVM(model=model, C=25)
 
 # Compare SVM with S-SVM doing k-fold cross validation, see scikit-learn.org.
 # With k=5, in each fold we have 4 jackets for testing, 19 for training,
@@ -163,7 +163,7 @@ for train_index, test_index in kf:
     Y_test = Y_test.flatten()
 
     # Create and train
-    svm = LinearSVC(dual=False, C=35)
+    svm = LinearSVC(dual=False, C=30)
     svm.fit(X_train, Y_train)
 
     # Use test dataset to meassure the svm's accuracy
